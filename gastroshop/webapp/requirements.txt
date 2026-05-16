@@ -1,0 +1,5 @@
+Flask==0.12.2
+PyMySQL==0.9.2
+PyYAML==3.13
+redis==3.2.0
+Werkzeug==0.14.1

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  webapp:
+    build: ./webapp
+    container_name: audit_webapp
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=Admin123!
+      - DB_NAME=gastroshop
+      - SECRET_KEY=supersecret123
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: on-failure
+
+  mysql:
+    image: mysql:5.7
+    container_name: audit_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Admin123!
+      MYSQL_DATABASE: gastroshop
+    ports:
+      # BŁĄD VULN-08: MySQL wyeksponowane na zewnątrz
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pAdmin123!"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:6.0
+    container_name: audit_redis
+    ports:
+      - "6379:6379"

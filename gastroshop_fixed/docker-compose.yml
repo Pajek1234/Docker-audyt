@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  webapp:
+    build: ./webapp
+    container_name: gastroshop_webapp
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=appuser
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=gastroshop
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    user: "1000:1000"
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0
+    container_name: gastroshop_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: gastroshop
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    # NAPRAWKA VULN-08: MySQL NIE jest wyeksponowane na zewnątrz
+    expose:
+      - "3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "appuser", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: gastroshop_redis
+    # NAPRAWKA VULN-08: Redis niedostępny z zewnątrz
+    expose:
+      - "6379"
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mysql_data:

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>GastroShop - Urządzenia Gastronomiczne</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f4f4f4;color:#333}
+header{background:#2c3e50;color:white;padding:16px 40px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:24px}
+header nav a{color:white;text-decoration:none;margin-left:20px;font-size:14px}
+header nav a:hover{text-decoration:underline}
+.user-info{display:flex;align-items:center;gap:14px;font-size:13px;color:#ecf0f1}
+.user-info .role-badge{background:#e67e22;color:white;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:bold;text-transform:uppercase}
+.user-info a{color:#e67e22;text-decoration:none;font-size:13px}
+.user-info a:hover{text-decoration:underline}
+.cart-badge{background:#e74c3c;color:white;border-radius:50%;padding:1px 6px;font-size:11px;margin-left:4px}
+.hero{background:#e67e22;color:white;text-align:center;padding:60px 40px}
+.hero h2{font-size:36px;margin-bottom:12px}
+.hero p{font-size:16px;margin-bottom:24px}
+.hero button{background:white;color:#e67e22;border:none;padding:12px 32px;font-size:16px;cursor:pointer;border-radius:4px;font-weight:bold}
+.hero button:hover{background:#f9f9f9}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:40px;max-width:1100px;margin:0 auto}
+.card{background:white;border-radius:6px;padding:24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.card .icon{font-size:48px;margin-bottom:12px}
+.card h3{font-size:16px;margin-bottom:8px}
+.card p{font-size:13px;color:#666;margin-bottom:16px}
+.card .price{font-size:20px;font-weight:bold;color:#e67e22;margin-bottom:12px}
+.card button{background:#2c3e50;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:13px}
+.card button:hover{background:#34495e}
+.panel-section{background:white;max-width:460px;margin:0 auto 40px;padding:32px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center}
+.panel-section h3{margin-bottom:6px;font-size:20px}
+.tabs{display:flex;border-bottom:2px solid #eee;margin-bottom:20px;margin-top:16px}
+.tab-btn{flex:1;padding:10px;background:none;border:none;font-size:14px;cursor:pointer;color:#999;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab-btn.active{color:#e67e22;border-bottom-color:#e67e22;font-weight:bold}
+.tab-content{display:none}.tab-content.active{display:block}
+.panel-section input{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ddd;border-radius:4px;font-size:14px}
+.panel-section input:focus{outline:none;border-color:#e67e22}
+.btn-orange{width:100%;background:#e67e22;color:white;border:none;padding:12px;border-radius:4px;font-size:15px;cursor:pointer}
+.btn-orange:hover{background:#d35400}
+.msg{margin-top:12px;padding:10px 14px;border-radius:4px;font-size:13px;text-align:left}
+.msg.ok{background:#eafaf1;border:1px solid #a9dfbf;color:#1e8449}
+.msg.err{background:#fdedec;border:1px solid #f1948a;color:#a93226}
+.cart-panel{background:white;max-width:1100px;margin:0 auto 0;padding:0 40px 20px}
+.cart-box{background:#fff8f3;border:1px solid #f0d0b0;border-radius:6px;padding:16px 20px}
+.cart-box h4{color:#e67e22;margin-bottom:10px;font-size:15px}
+.cart-item{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #f0e0d0}
+.cart-item:last-child{border:none}
+.cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.cart-total{font-weight:bold;color:#2c3e50;font-size:15px}
+.btn-clear{background:#e74c3c;color:white;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px}
+.btn-clear:hover{background:#c0392b}
+.audit-bar{background:#2c3e50;color:white;padding:10px 40px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.audit-bar a{color:#e67e22;cursor:pointer;text-decoration:none}
+.audit-panel{background:#1a252f;color:#ecf0f1;padding:24px 40px;display:none}
+.audit-panel.open{display:block}
+.vuln-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.vuln{background:#243342;border-radius:6px;padding:14px;border-left:4px solid #ccc}
+.vuln.c{border-left-color:#e74c3c}.vuln.h{border-left-color:#e67e22}.vuln.m{border-left-color:#f1c40f}
+.badge{font-size:10px;padding:2px 8px;border-radius:3px;font-weight:bold;text-transform:uppercase}
+.badge.c{background:rgba(231,76,60,0.2);color:#e74c3c}
+.badge.h{background:rgba(230,126,34,0.2);color:#e67e22}
+.badge.m{background:rgba(241,196,15,0.2);color:#f1c40f}
+.vuln-title{font-size:13px;font-weight:bold;margin:6px 0 4px;color:#ecf0f1}
+.vuln-desc{font-size:11px;color:#95a5a6;line-height:1.5}
+.audit-tabs{display:flex;gap:8px;margin-bottom:16px}
+.at{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#bdc3c7;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px;font-family:Arial}
+.at.active{background:#e67e22;border-color:#e67e22;color:white}
+.ap{display:none}.ap.active{display:block}
+.db-status{background:#243342;border-radius:6px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:#27ae60;flex-shrink:0}
+.users-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.users-table th{background:#2c3e50;color:#bdc3c7;padding:8px 10px;text-align:left;font-weight:normal;text-transform:uppercase;font-size:10px;letter-spacing:0.05em}
+.users-table td{padding:8px 10px;border-bottom:1px solid #2c3e50;color:#ecf0f1}
+.users-table td.pw{color:#e74c3c}
+.users-note{font-size:11px;color:#7f8c8d;margin-top:8px}
+.audit-msg{font-size:13px;color:#bdc3c7;padding:10px 0}
+footer{background:#2c3e50;color:#aaa;text-align:center;padding:20px;font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍽️ GastroShop</h1>
+  <nav>
+    <a href="#">Strona główna</a>
+    <a href="#produkty">Produkty</a>
+    <a href="#">Kontakt</a>
+  </nav>
+  <div class="user-info">
+    {% if user %}
+      <span>👤 {{ user.name }}</span>
+      <span class="role-badge">{{ user.role }}</span>
+      🛒<span class="cart-badge">{{ cart_count }}</span>
+      <a href="/logout">Wyloguj</a>
+    {% else %}
+      🛒<span class="cart-badge">{{ cart_count }}</span>
+    {% endif %}
+  </div>
+</header>
+
+<div class="audit-bar">
+  <span>⚠️ Tryb audytu bezpieczeństwa — projekt edukacyjny</span>
+  <a onclick="toggleAudit()" id="audit-toggle-btn">▼ Pokaż panel audytu</a>
+</div>
+
+<div class="audit-panel" id="audit-panel">
+  <div class="db-status">
+    <div class="dot"></div>
+    <span style="color:#bdc3c7">MySQL 5.7 — baza danych &nbsp;|&nbsp;</span>
+    <span style="color:white">Połączenie przez PyMySQL (webapp → mysql:3306)</span>
+  </div>
+  <div class="audit-tabs">
+    <button class="at active" onclick="switchAT('vulns',this)">Podatności (9)</button>
+    <button class="at" onclick="switchAT('users',this)">Użytkownicy w DB</button>
+  </div>
+
+  <div id="ap-vulns" class="ap active">
+    <div class="vuln-grid">
+      <div class="vuln c"><span class="badge c">CRITICAL</span><div class="vuln-title">VULN-01: SQL Injection</div><div class="vuln-desc">Login i rejestracja: <code>WHERE email='%s' AND password='%s'</code> — brak parametryzacji. Wpisz <code>' OR '1'='1</code> jako email.</div></div>
+      <div class="vuln c"><span class="badge c">CRITICAL</span><div class="vuln-title">VULN-02: Plaintext hasła</div><div class="vuln-desc">Hasła w bazie MySQL bez hashowania (bcrypt/argon2). Wyciek bazy = wyciek wszystkich haseł użytkowników.</div></div>
+      <div class="vuln c"><span class="badge c">CRITICAL</span><div class="vuln-title">VULN-03: Dane w ENV Dockerfile</div><div class="vuln-desc"><code>ENV DB_PASSWORD=SuperTajne!</code> i klucze AWS zakodowane w obrazie Docker — widoczne w <code>docker inspect</code>.</div></div>
+      <div class="vuln c"><span class="badge c">CRITICAL</span><div class="vuln-title">VULN-04: SSH Root Login</div><div class="vuln-desc"><code>PermitRootLogin yes</code> + hasło <code>password123</code>. Dostęp root przez SSH z zewnątrz.</div></div>
+      <div class="vuln h"><span class="badge h">HIGH</span><div class="vuln-title">VULN-05: chmod -R 777</div><div class="vuln-desc">Każdy proces może nadpisać pliki aplikacji. Ryzyko eskalacji uprawnień i modyfikacji kodu.</div></div>
+      <div class="vuln h"><span class="badge h">HIGH</span><div class="vuln-title">VULN-06: Obraz EOL (Debian 9)</div><div class="vuln-desc">Debian Stretch — koniec wsparcia, brak łat bezpieczeństwa dla setek pakietów systemowych.</div></div>
+      <div class="vuln h"><span class="badge h">HIGH</span><div class="vuln-title">VULN-07: XSS w odpowiedzi</div><div class="vuln-desc"><code>"&lt;h1&gt;Witaj "+email+"!&lt;/h1&gt;"</code> — email bez escapowania trafia do HTML. Możliwy atak XSS.</div></div>
+      <div class="vuln m"><span class="badge m">MEDIUM</span><div class="vuln-title">VULN-08: Zbędne porty</div><div class="vuln-desc">Telnet (23), FTP (21), SSH (22), MySQL (3306) — niepotrzebnie wyeksponowane na zewnątrz kontenera.</div></div>
+      <div class="vuln m"><span class="badge m">MEDIUM</span><div class="vuln-title">VULN-09: Stare zależności</div><div class="vuln-desc">Flask 0.12.2 (CVE-2018-1000656), PyYAML 3.13, PyMySQL 0.9.2 — znane podatności CVE.</div></div>
+    </div>
+  </div>
+
+  <div id="ap-users" class="ap">
+    <div id="users-container" class="audit-msg">
+      {% if user and user.role == 'admin' %}
+        Kliknij przycisk poniżej aby załadować dane z MySQL.
+        <br><br>
+        <button class="at" onclick="loadUsers()">Załaduj użytkowników z bazy</button>
+        <div id="users-table-wrap"></div>
+      {% else %}
+        🔒 Tylko administrator może podejrzeć użytkowników w tej zakładce. Zaloguj się jako <code>admin@gastroshop.pl</code>.
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <h2>Profesjonalne urządzenia gastronomiczne</h2>
+  <p>Piece, chłodnictwo, zmywarki – wszystko dla Twojej restauracji</p>
+  <button onclick="document.getElementById('produkty').scrollIntoView({behavior:'smooth'})">Zobacz ofertę</button>
+</div>
+
+<div id="produkty" class="products">
+  <div class="card">
+    <div class="icon">🔥</div>
+    <h3>Piec Konwekcyjny ProChef</h3>
+    <p>10 poziomów GN 1/1, sterowanie dotykowe</p>
+    <div class="price">18 999 zł</div>
+    {% if user %}
+    <form action="/cart/add" method="POST">
+      <input type="hidden" name="product" value="Piec Konwekcyjny ProChef">
+      <input type="hidden" name="price" value="18999">
+      <button type="submit">Do koszyka</button>
+    </form>
+    {% else %}
+    <button onclick="alert('Zaloguj się aby dodać do koszyka!')">Do koszyka</button>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="icon">❄️</div>
+    <h3>Szafa Chłodnicza 1400L</h3>
+    <p>Klasa A++, stal nierdzewna, drzwi przeszklone</p>
+    <div class="price">10 540 zł</div>
+    {% if user %}
+    <form action="/cart/add" method="POST">
+      <input type="hidden" name="product" value="Szafa Chłodnicza 1400L">
+      <input type="hidden" name="price" value="10540">
+      <button type="submit">Do koszyka</button>
+    </form>
+    {% else %}
+    <button onclick="alert('Zaloguj się aby dodać do koszyka!')">Do koszyka</button>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="icon">🫧</div>
+    <h3>Zmywarka Tunelowa T3</h3>
+    <p>Do 3000 naczyń/h, system odzysku ciepła</p>
+    <div class="price">26 800 zł</div>
+    {% if user %}
+    <form action="/cart/add" method="POST">
+      <input type="hidden" name="product" value="Zmywarka Tunelowa T3">
+      <input type="hidden" name="price" value="26800">
+      <button type="submit">Do koszyka</button>
+    </form>
+    {% else %}
+    <button onclick="alert('Zaloguj się aby dodać do koszyka!')">Do koszyka</button>
+    {% endif %}
+  </div>
+</div>
+
+{% if user and cart %}
+<div class="cart-panel">
+  <div class="cart-box">
+    <h4>🛒 Twój koszyk</h4>
+    {% set total = namespace(val=0) %}
+    {% for item in cart %}
+      {% set total.val = total.val + item.price|int %}
+      <div class="cart-item">
+        <span>{{ item.name }}</span>
+        <span>{{ "{:,}".format(item.price|int).replace(","," ") }} zł</span>
+      </div>
+    {% endfor %}
+    <div class="cart-footer">
+      <span class="cart-total">Razem: {{ "{:,}".format(total.val).replace(","," ") }} zł</span>
+      <a href="/cart/clear"><button class="btn-clear">🗑 Wyczyść koszyk</button></a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if not user %}
+<div class="panel-section" id="login-panel">
+  <h3>Panel klienta</h3>
+  <div class="tabs">
+    <button class="tab-btn {% if active_tab != 'register' %}active{% endif %}" onclick="switchTab('login',this)">Logowanie</button>
+    <button class="tab-btn {% if active_tab == 'register' %}active{% endif %}" onclick="switchTab('register',this)">Rejestracja</button>
+  </div>
+
+  <div id="tab-login" class="tab-content {% if active_tab != 'register' %}active{% endif %}">
+    <form action="/login" method="POST">
+      <input type="email" name="email" placeholder="E-mail" required>
+      <input type="password" name="password" placeholder="Hasło" required>
+      <button type="submit" class="btn-orange">Zaloguj się</button>
+    </form>
+    {% if login_error %}
+      <div class="msg err">{{ login_error }}</div>
+    {% endif %}
+    <p style="font-size:11px;color:#999;margin-top:12px">
+      SQL Injection: wpisz <code>' OR '1'='1</code> jako email i cokolwiek jako hasło
+    </p>
+  </div>
+
+  <div id="tab-register" class="tab-content {% if active_tab == 'register' %}active{% endif %}">
+    <form action="/register" method="POST">
+      <input type="text" name="name" placeholder="Imię i nazwisko" required>
+      <input type="email" name="reg_email" placeholder="E-mail" required>
+      <input type="password" name="reg_pass" placeholder="Hasło (min. 6 znaków)" required>
+      <button type="submit" class="btn-orange">Zarejestruj się</button>
+    </form>
+    {% if reg_error %}
+      <div class="msg err">{{ reg_error }}</div>
+    {% endif %}
+    {% if reg_success %}
+      <div class="msg ok">{{ reg_success }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<div style="height:40px"></div>
+
+<footer>
+  © 2024 GastroShop | Wersja 1.0 | HTTP (brak SSL) |
+  <span style="color:#e67e22">Projekt edukacyjny — audyt bezpieczeństwa</span>
+</footer>
+
+<script>
+function toggleAudit(){
+  const p=document.getElementById('audit-panel');
+  p.classList.toggle('open');
+  document.getElementById('audit-toggle-btn').textContent=
+    p.classList.contains('open')?'▲ Ukryj panel audytu':'▼ Pokaż panel audytu';
+}
+function switchAT(name,btn){
+  document.querySelectorAll('.at').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.ap').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ap-'+name).classList.add('active');
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+function loadUsers(){
+  fetch('/users')
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.error){document.getElementById('users-table-wrap').innerHTML='<p style="color:#e74c3c;margin-top:10px">'+data.error+'</p>';return;}
+      let html='<table class="users-table"><thead><tr><th>#</th><th>Imię i nazwisko</th><th>E-mail</th><th>Hasło (plaintext — VULN-02)</th><th>Rola</th></tr></thead><tbody>';
+      data.forEach(u=>{
+        html+=`<tr><td style="color:#7f8c8d">${u.id}</td><td>${u.name}</td><td>${u.email}</td><td class="pw">${u.password}</td><td>${u.role}</td></tr>`;
+      });
+      html+='</tbody></table><p class="users-note">Hasła widoczne jako plaintext — w produkcji używaj bcrypt lub argon2id.</p>';
+      document.getElementById('users-table-wrap').innerHTML=html;
+    })
+    .catch(()=>document.getElementById('users-table-wrap').innerHTML='<p style="color:#e74c3c;margin-top:10px">Błąd połączenia z serwerem.</p>');
+}
+</script>
+
+</body>
+</html>
